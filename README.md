@@ -243,49 +243,6 @@ npx prisma studio
 - **VSCode**: 推奨エディター
 - **ブラウザ**: Chrome/Firefox最新版（開発者ツール使用）
 
-### デバッグ・検証ツール
-
-#### セキュリティヘッダー確認
-```bash
-# ブラウザの開発者ツール > Network タブで確認
-# または curl コマンド
-curl -I http://localhost:3000
-```
-
-#### データベース状態確認
-```bash
-# Prisma Studio で視覚的に確認
-npx prisma studio
-
-# SQLite CLI で直接確認
-sqlite3 prisma/app.db
-```
-
-#### セキュリティログ確認
-```bash
-# 開発サーバーのコンソール出力を監視
-# ログイン失敗・レート制限などがリアルタイム表示
-```
-
----
-
-## 🤝 貢献・改善
-
-### バグ報告・機能要望
-- **Issues**: GitHub Issues でバグ報告・機能要望を受付
-- **Security**: セキュリティ脆弱性は非公開で報告してください
-
-### 開発参加
-1. **Fork**: このリポジトリをフォーク
-2. **Branch**: 機能別ブランチを作成
-3. **Test**: セキュリティテストを実施
-4. **PR**: プルリクエストを作成
-
-### セキュリティ貢献
-- **ペネトレーションテスト**: 脆弱性の発見・報告
-- **セキュリティ機能追加**: MFA・不正検知等の実装
-- **ドキュメント改善**: セキュリティガイドの充実
-
 ---
 
 ## 📚 参考資料・学習リソース
@@ -305,28 +262,6 @@ sqlite3 prisma/app.db
 
 ---
 
-## 📄 ライセンス
-
-このプロジェクトは **MIT License** の下で公開されています。
-
-```
-MIT License
-
-Copyright (c) 2025 Web Security Learning Project
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
----
-
 ## 🎯 免責事項
 
 > ⚠️ **教育目的専用**: このプロジェクトは教育・学習目的で作成されています。
@@ -336,16 +271,3 @@ copies or substantial portions of the Software.
 > - **責任範囲**: 使用による損害に対して作者は責任を負いません
 
 **学習・実験・研究用途**でのご利用をお願いします。 🎓
-
----
-
-<div align="center">
-
-**🔐 Secure Web Development Learning Platform 🔐**
-
-*セキュリティを学び、より安全なWebを構築しましょう*
-
-[![GitHub Stars](https://img.shields.io/github/stars/akaumigame6/web-token-sec?style=social)](https://github.com/akaumigame6/web-token-sec)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/akaumigame6/web-token-sec/issues)
-
-</div>
