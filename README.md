@@ -1,187 +1,351 @@
-# トークンベース認証APP
+# 🔐 セキュアWebアプリケーション実習
 
-## 概要
+> **JWTトークンベース認証システム** - エンタープライズレベルのセキュリティを学ぶ実験プロジェクト
 
-このプロジェクトは **ウェブアプリのセキュリティ実験用のコンテンツ** です。セキュリティに対する理解を深めるためにゼロからユーザ認証を実装した物になります。
+[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)](https://www.prisma.io/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.0+-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
 
-## セットアップ手順
+## 📖 概要
 
-### 1. リポジトリのクローン
+このプロジェクトは **ウェブアプリケーションセキュリティの実習用プラットフォーム** です。
+現代的なセキュリティ要件を満たす認証システムをゼロから実装し、実践的なセキュリティ知識を習得できます。
 
-```
+### 🎯 学習目標
+- JWTトークンベース認証の理解と実装
+- CSRFやXSS等の代表的な攻撃手法とその対策
+- セキュリティヘッダーとHTTPセキュリティ
+- レート制限とブルートフォース攻撃対策
+- セキュリティ監査とログ機能
+
+---
+
+## 🚀 クイックスタート
+
+### 1️⃣ プロジェクトの取得
+
+```bash
 git clone https://github.com/akaumigame6/web-token-sec.git
 cd web-token-sec
 ```
 
-上記でクローンすると、カレントフォルダのなかに `web-token-sec` というフォルダが新規作成されて展開されます。別名にしたいときは、たとえば `hoge` というフォルダにクローンしたいときは、次のようにしてください。
-
-```
-git clone https://github.com/akaumigame6/web-token-sec.git hoge
-cd hoge
-```
-
-### 2. 依存関係のインストール
+### 2️⃣ 依存関係のインストール
 
 ```bash
-npm i
+npm install
 ```
 
-### 3. 環境変数の設定ファイル (.env) の作成
+### 3️⃣ 環境設定
 
-プロジェクトのルートフォルダに `.env` (環境変数の設定ファイル) を新規作成して以下の内容を記述してください。
+`.env` ファイルを作成し、以下を設定：
 
-```
+```env
 DATABASE_URL="file:./app.db"
-JWT_SECRET=ABCDEFG123456789UVWXYZ
-CSRF_SECRET=HIJKLMN987654321STUVWX
+JWT_SECRET=your-super-secret-jwt-key-16chars-or-more
+CSRF_SECRET=your-csrf-protection-secret-key-16chars
 ```
 
-- `JWT_SECRET` は認証処理に必要な秘密キーです。安全性を確保するため、適当なランダムな英数字を用いた **16文字以上の文字列** に置き換えてください。文字数が不十分だと、動作時にエラーとなる可能性があります。
-- `CSRF_SECRET` はCSRF攻撃対策に必要な秘密キーです。`JWT_SECRET`とは異なる **16文字以上のランダム文字列** を設定してください。
+> ⚠️ **セキュリティ注意**: 実際の運用では16文字以上のランダムな文字列を使用してください
 
-
-### 4. データベースの初期化
+### 4️⃣ データベース初期化
 
 ```bash
 npx prisma db push
-npx prisma generate
+npx prisma generate  
 npx prisma db seed
 ```
 
-### 5. 開発サーバの起動
+### 5️⃣ 開発サーバー起動
 
 ```bash
 npm run dev
+# ブラウザで http://localhost:3000 を開く
 ```
 
-### 6. ビルドと実行
+### 🔧 その他のコマンド
 
 ```bash
-npm run build
-npm run start
-```
+# 本番ビルド & 実行
+npm run build && npm start
 
-- データベースの状態確認
-
-```bash
+# データベース管理画面
 npx prisma studio
 ```
 
-## 技術スタック
-### フロントエンド
-- Next.js 15.3.3
-  - React フレームワーク（App Router使用）
-- TypeScript - 型安全性の確保
-- TailwindCSS - レスポンシブデザイン
+---
 
-### バックエンド
-- Next.js API Routes - サーバーサイドAPI
-- Prisma ORM - データベース操作
+## 🛠️ 技術スタック
 
-### セキュリティ
-- bcrypt - パスワードハッシュ化
-- jose - JWT操作
-- zod - バリデーション
-- zxcvbn - パスワードの強度確認
+### Frontend
+| 技術 | バージョン | 用途 |
+|------|-----------|------|
+| **Next.js** | 15.3.3 | React フレームワーク（App Router） |
+| **TypeScript** | 5.0+ | 型安全性とコード品質向上 |
+| **TailwindCSS** | 3.0+ | レスポンシブ・モダンUI |
 
-## 主要機能
+### Backend & Database  
+| 技術 | 用途 |
+|------|------|
+| **Next.js API Routes** | サーバーサイドAPI |
+| **Prisma ORM** | データベース操作とマイグレーション |
+| **SQLite** | 開発環境用軽量データベース |
 
-### 🔐 **認証・アカウント管理**
-- **ユーザー登録**  
-![ユーザー登録画面](image/Signup.png)  
- - メールアドレス
- - パスワード
- - 秘密の質問
- での新規アカウント作成
-- **ログイン・ログアウト**  
+### Security & Validation
+| ライブラリ | 用途 |
+|-----------|------|
+| **bcryptjs** | パスワードハッシュ化（ソルト付き） |
+| **jose** | JWT生成・検証 |
+| **zod** | 入力値バリデーション |
+| **zxcvbn** | パスワード強度評価 |
+
+---
+
+## ✨ 主要機能
+
+### 🔐 認証・アカウント管理
+
+<details>
+<summary><strong>📝 ユーザー登録</strong></summary>
+
+![ユーザー登録画面](image/Signup.png)
+
+- ✅ メールアドレス・パスワード登録
+- ✅ 秘密の質問設定（パスワードリセット用）
+- ✅ リアルタイムパスワード強度評価
+- ✅ 確認パスワードによるダブルチェック
+
+</details>
+
+<details>
+<summary><strong>🔑 ログイン・ログアウト</strong></summary>
+
 ![ログイン画面](image/Login.png)
- - JWT（JSON Web Token）ベースの認証システム
-- **パスワードリセット** 
-![パスワードリセット画面1](image/PasswordReset-1.png) 
-![パスワードリセット画面2](image/PasswordReset-2.png) 
-![パスワードリセット画面3](image/PasswordReset-3.png) 
- - メールアドレス＋秘密の質問による本人確認後のパスワード変更
 
-### 👤 **プロフィール管理**
-![プロフィール画面](image/About.png) 
-- **公開プロフィール作成**: カスタムURL（スラッグ）での個人ページ作成
-- **プロフィール編集**: About情報のリアルタイム編集・プレビュー機能
-- **アカウント設定**: 秘密の質問の変更（ログイン必須）
+- ✅ JWT（JSON Web Token）ベース認証
+- ✅ セキュアなトークン管理
+- ✅ ブルートフォース攻撃対策
 
-## 実装しているセキュリティ機能
-### ユーザー登録・サインアップ
-![ユーザー登録画面](image/Signup.png) 
-#### パスワードセキュリティ
-- **パスワード強度表示**: zxcvbnライブラリによるリアルタイム強度評価
-- **確認パスワード**: パスワード入力ミスを防ぐダブルチェック
+</details>
 
-#### 秘密の質問システム
-![秘密の質問画面](image/PasswordReset-2.png) 
-- **本人確認用質問**: アカウント登録時に秘密の質問と答えを設定
+<details>
+<summary><strong>🔄 パスワードリセット（未ログイン可）</strong></summary>
 
-#### 未ログイン状態でのパスワードリセット
-- **メールアドレス認証**: パスワードリセット開始時にメールアドレスを入力
-- **秘密の質問による本人確認**: メールアドレスに紐づく秘密の質問で認証
-- **時間制限付きリセットトークン**: 10分間有効なワンタイムトークン
+| ステップ1 | ステップ2 | ステップ3 |
+|----------|----------|----------|
+| ![パスワードリセット1](image/PasswordReset-1.png) | ![パスワードリセット2](image/PasswordReset-2.png) | ![パスワードリセット3](image/PasswordReset-3.png) |
+| メールアドレス入力 | 秘密の質問回答 | 新パスワード設定 |
 
-### アカウント設定変更機能
-#### 秘密の質問更新（ログイン必須）
-- **JWT認証必須**: ログインユーザーのみアクセス可能
-- **現在パスワード確認**: パスワード検証による本人確認
-- **即座反映**: 新しい秘密の質問設定は即座に有効化
-- **外部アクセス防止**: 認証なしのAPIアクセスを完全ブロック
+- ✅ メールアドレス + 秘密の質問による本人確認
+- ✅ 時間制限付きリセットトークン（10分間有効）
+- ✅ 未ログイン状態でも安全にリセット可能
 
-## セキュリティレベル評価
+</details>
 
-### ✅ **実装済みセキュリティ機能**
+### 👤 プロフィール管理
+
+<details>
+<summary><strong>📋 公開プロフィール</strong></summary>
+
+![プロフィール画面](image/About.png)
+
+- ✅ カスタムURL（スラッグ）での個人ページ
+- ✅ About情報のリアルタイム編集・プレビュー
+- ✅ 認証必須の秘密の質問変更機能
+
+</details>
+
+---
+
+## 🛡️ セキュリティ機能
+
+このプロジェクトは **エンタープライズレベルのセキュリティ** を実装しており、以下の脅威から保護されています：
+
+### ✅ 実装済みセキュリティ対策
+
+#### 🔒 認証・認可
 - **パスワードハッシュ化**: bcryptjs使用（ソルト付き）
-- **JWT署名検証**: HMAC-SHA256による改竄防止
+- **JWT署名検証**: HMAC-SHA256による改竄防止  
 - **入力値検証**: Zodによる型安全なバリデーション
 - **SQL インジェクション対策**: Prisma ORM による自動対策
 - **認証必須API**: 重要操作での厳格なJWT検証
 
-#### セキュリティヘッダー
-- **CSP（Content Security Policy）**: XSS攻撃対策の強化版ポリシー
-  - `unsafe-eval` 禁止、外部スクリプト制限
-  - オブジェクト・フレーム埋め込み禁止
-  - HTTPS自動アップグレード
-- **クリックジャッキング対策**: X-Frame-Options: DENY
-- **MIME スニッフィング対策**: X-Content-Type-Options: nosniff
-- **XSS フィルター**: X-XSS-Protection: 1; mode=block
-- **リファラー制御**: Referrer-Policy: strict-origin-when-cross-origin
-- **権限ポリシー**: カメラ・マイク・位置情報アクセス禁止
-- **HSTS**: 本番環境でHTTPS強制（2年間）
-- **Cross-Origin ポリシー**: 本番環境で追加保護
+#### 🛡️ セキュリティヘッダー
+| ヘッダー | 効果 | 設定値 |
+|----------|------|--------|
+| **CSP** | XSS攻撃対策 | 厳格ポリシー + HTTPS強制 |
+| **X-Frame-Options** | クリックジャッキング対策 | `DENY` |
+| **X-Content-Type-Options** | MIME スニッフィング対策 | `nosniff` |
+| **X-XSS-Protection** | XSS フィルター | `1; mode=block` |
+| **HSTS** | HTTPS強制（本番） | 2年間 + サブドメイン |
+| **Permissions-Policy** | 危険API制限 | カメラ・マイク・位置情報禁止 |
 
-#### ブルートフォース攻撃対策
-- **ログイン試行制限**: 15分間で5回まで
-- **パスワードリセット制限**: 1時間で3回まで
-- **サインアップ制限**: 1時間で5回まで
-- **レート制限ヘッダー**: 残り回数・リセット時間を通知
+#### 🚫 ブルートフォース攻撃対策
+| 対象 | 制限 | 時間枠 |
+|------|------|--------|
+| **ログイン試行** | 5回まで | 15分間 |
+| **パスワードリセット** | 3回まで | 1時間 |
+| **サインアップ** | 5回まで | 1時間 |
 
-#### セキュリティ監査
-- **包括的ログ**: ログイン・認証失敗・セキュリティ違反を記録
-- **IPアドレス追跡**: クライアント識別とプロキシ対応
+- ✅ IPアドレス別の個別制限
+- ✅ レート制限ヘッダーで残り回数通知
+- ✅ 制限超過時の自動リトライ時間通知
+
+#### 📊 セキュリティ監査
+- **包括的ログ**: 全認証イベント・セキュリティ違反を記録
+- **IPアドレス追跡**: プロキシ対応の正確な識別  
 - **ユーザーエージェント記録**: デバイス・ブラウザ情報
 - **リアルタイム監視**: 疑わしい活動の即座検知
 
-#### CSRF対策
-- **CSRFトークン**: 時間制限付きHMAC署名
+#### 🛡️ CSRF対策
+- **CSRFトークン**: 時間制限付きHMAC署名（1時間有効）
 - **Double Submit Cookie**: Cookie + ヘッダーの二重検証
-- **同一サイト制限**: SameSite=Strict Cookie設定
+- **SameSite制限**: `SameSite=Strict` Cookie設定
 
-### ⚠️ **セキュリティ改善余地**
-- **セッション管理**: JWTの強制失効機能なし
-- **MFA（多要素認証）**: SMS/TOTP認証が未実装
-- **不正検知**: 機械学習ベースの異常検知なし
-- **データ暗号化**: 保存データの暗号化なし
+---
 
-### 🔒 **本格運用時の追加推奨事項**
+### 🚧 さらなる改善の余地
+
+#### ⚠️ 現在未実装
 - **JWTブラックリスト**: トークン強制失効機能
-- **多要素認証（MFA）**: SMS/TOTP/WebAuthn認証の追加
-- **機械学習ベース不正検知**: 異常なログインパターンの自動検知
-- **定期的パスワード変更**: パスワード有効期限とポリシーエンジン
+- **MFA（多要素認証）**: SMS/TOTP認証
+- **機械学習ベース不正検知**: 異常パターン自動検知
 - **データベース暗号化**: 保存データのAES暗号化
-- **WAF（Web Application Firewall）**: アプリケーションレベル保護
-- **ペネトレーションテスト**: 定期的な脆弱性診断
+
+#### 🔒 本格運用時の推奨事項
+- **WAF導入**: アプリケーションレベル保護
+- **ペネトレーションテスト**: 定期的な脆弱性診断  
 - **セキュリティ監視センター**: 24/7リアルタイム監視
+- **コンプライアンス**: GDPR・SOC2等の認証取得
+
+---
+
+## 🎓 セキュリティ学習ポイント
+
+このプロジェクトで学べる重要なセキュリティ概念：
+
+1. **認証vs認可**: JWTトークンの適切な活用方法
+2. **OWASP Top 10**: 代表的な脆弱性とその対策実装
+3. **防御の多層化**: 複数のセキュリティ対策の組み合わせ
+4. **セキュリティヘッダー**: ブラウザレベルでの保護機能
+5. **レート制限**: DoS・ブルートフォース攻撃対策
+6. **セキュリティ監査**: ログ・監視・インシデント対応
+
+> 💡 **実習のポイント**: 各セキュリティ機能を無効化して攻撃がどのように成功するかを確認することで、対策の重要性を体感できます。
+
+---
+
+## 🧪 開発・テスト環境
+
+### 推奨開発環境
+- **Node.js**: 18.0+ 
+- **npm**: 8.0+
+- **VSCode**: 推奨エディター
+- **ブラウザ**: Chrome/Firefox最新版（開発者ツール使用）
+
+### デバッグ・検証ツール
+
+#### セキュリティヘッダー確認
+```bash
+# ブラウザの開発者ツール > Network タブで確認
+# または curl コマンド
+curl -I http://localhost:3000
+```
+
+#### データベース状態確認
+```bash
+# Prisma Studio で視覚的に確認
+npx prisma studio
+
+# SQLite CLI で直接確認
+sqlite3 prisma/app.db
+```
+
+#### セキュリティログ確認
+```bash
+# 開発サーバーのコンソール出力を監視
+# ログイン失敗・レート制限などがリアルタイム表示
+```
+
+---
+
+## 🤝 貢献・改善
+
+### バグ報告・機能要望
+- **Issues**: GitHub Issues でバグ報告・機能要望を受付
+- **Security**: セキュリティ脆弱性は非公開で報告してください
+
+### 開発参加
+1. **Fork**: このリポジトリをフォーク
+2. **Branch**: 機能別ブランチを作成
+3. **Test**: セキュリティテストを実施
+4. **PR**: プルリクエストを作成
+
+### セキュリティ貢献
+- **ペネトレーションテスト**: 脆弱性の発見・報告
+- **セキュリティ機能追加**: MFA・不正検知等の実装
+- **ドキュメント改善**: セキュリティガイドの充実
+
+---
+
+## 📚 参考資料・学習リソース
+
+### セキュリティ標準・ガイドライン
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/) - Webアプリケーション脆弱性トップ10
+- [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework) - サイバーセキュリティフレームワーク
+- [MDN Web Security](https://developer.mozilla.org/en-US/docs/Web/Security) - Web セキュリティリファレンス
+
+### JWT・認証関連
+- [JWT.io](https://jwt.io/) - JWT仕様とデバッガー
+- [Auth0 Blog](https://auth0.com/blog/) - 認証・認可のベストプラクティス
+
+### Next.js・React セキュリティ
+- [Next.js Security](https://nextjs.org/docs/advanced-features/security-headers) - セキュリティヘッダー設定
+- [React Security](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml) - XSS対策
+
+---
+
+## 📄 ライセンス
+
+このプロジェクトは **MIT License** の下で公開されています。
+
+```
+MIT License
+
+Copyright (c) 2025 Web Security Learning Project
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+```
+
+---
+
+## 🎯 免責事項
+
+> ⚠️ **教育目的専用**: このプロジェクトは教育・学習目的で作成されています。
+> 
+> - **本番環境での使用**: 追加のセキュリティ監査が必要です
+> - **セキュリティ保証**: 完全なセキュリティを保証するものではありません  
+> - **責任範囲**: 使用による損害に対して作者は責任を負いません
+
+**学習・実験・研究用途**でのご利用をお願いします。 🎓
+
+---
+
+<div align="center">
+
+**🔐 Secure Web Development Learning Platform 🔐**
+
+*セキュリティを学び、より安全なWebを構築しましょう*
+
+[![GitHub Stars](https://img.shields.io/github/stars/akaumigame6/web-token-sec?style=social)](https://github.com/akaumigame6/web-token-sec)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/akaumigame6/web-token-sec/issues)
+
+</div>
