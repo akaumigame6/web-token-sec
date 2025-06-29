@@ -1,8 +1,8 @@
-import { prisma } from "@/libs/prisma";
-import type { UserProfile } from "@/app/_types/UserProfile";
-import type { ApiResponse } from "@/app/_types/ApiResponse";
 import { NextResponse, NextRequest } from "next/server";
+import { prisma } from "@/libs/prisma";
 import { verifyJwt } from "@/app/api/_helper/verifyJwt";
+import type { ApiResponse } from "@/app/_types/ApiResponse";
+import type { SecretQuestion } from "@/app/_types/SecretQuestion";
 
 // キャッシュを無効化して常に最新情報を取得
 export const dynamic = "force-dynamic";
@@ -11,44 +11,56 @@ export const revalidate = 0;
 
 export const GET = async (req: NextRequest) => {
   try {
-    let userId: string | null = "";
-    userId = await verifyJwt(req); // トークンベース認証
-
+    // JWTトークンの検証
+    const userId = await verifyJwt(req);
     if (!userId) {
       const res: ApiResponse<null> = {
         success: false,
         payload: null,
         message: "認証情報が無効です。再度ログインしてください。",
       };
-      return NextResponse.json(res); // 失敗時も200を返す設計
+      return NextResponse.json(res);
     }
 
-    // userId から userProfile を取得
-    const user = (await prisma.user.findUnique({
+    // ユーザー情報を取得
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
+        secretQuestionId: true,
       },
-    })) as UserProfile | null;
+    });
 
-    if (!user) {
+    if (!user || !user.secretQuestionId) {
       const res: ApiResponse<null> = {
         success: false,
         payload: null,
-        message: "ユーザ情報の取得に失敗しました。",
+        message: "秘密の質問が設定されていません。",
       };
       return NextResponse.json(res);
     }
 
-    // ユーザ情報をレスポンスする
-    const res: ApiResponse<UserProfile> = {
+    // 秘密の質問を取得
+    const secretQuestion = await prisma.secretQuestion.findUnique({
+      where: { id: user.secretQuestionId },
+      select: {
+        id: true,
+        question: true,
+      },
+    });
+
+    if (!secretQuestion) {
+      const res: ApiResponse<null> = {
+        success: false,
+        payload: null,
+        message: "秘密の質問が見つかりません。",
+      };
+      return NextResponse.json(res);
+    }
+
+    const res: ApiResponse<SecretQuestion> = {
       success: true,
-      payload: user,
+      payload: secretQuestion,
       message: "",
-      metadata: JSON.stringify({ publishedAt: new Date() }),
     };
     return NextResponse.json(res);
   } catch (e) {
@@ -57,7 +69,7 @@ export const GET = async (req: NextRequest) => {
     const res: ApiResponse<null> = {
       success: false,
       payload: null,
-      message: "認証に関するバックエンド処理に失敗しました。",
+      message: "秘密の質問の取得に失敗しました。",
     };
     return NextResponse.json(res);
   }

@@ -1,12 +1,8 @@
 import { prisma } from "@/libs/prisma";
 import { loginRequestSchema } from "@/app/_types/LoginRequest";
-import { userProfileSchema } from "@/app/_types/UserProfile";
-import type { UserProfile } from "@/app/_types/UserProfile";
 import type { ApiResponse } from "@/app/_types/ApiResponse";
 import { NextResponse, NextRequest } from "next/server";
-import { createSession } from "@/app/api/_helper/createSession";
 import { createJwt } from "@/app/api/_helper/createJwt";
-import { AUTH } from "@/config/auth";
 import bcrypt from "bcryptjs";
 
 // キャッシュを無効化して毎回最新情報を取得
@@ -39,12 +35,10 @@ export const POST = async (req: NextRequest) => {
       };
       return NextResponse.json(res);
     }
-    console.log("取得したユーザー情報:", user);
 
     // パスワードの検証
     // bcrypt でハッシュ化したパスワードを検証。
     const isValidPassword = await bcrypt.compare(loginRequest.password,user.password);
-    console.log("取得したユーザー情報(bool):", isValidPassword);
 
     if (!isValidPassword) {
       const res: ApiResponse<null> = {
@@ -58,16 +52,6 @@ export const POST = async (req: NextRequest) => {
 
     const tokenMaxAgeSeconds = 60 * 60 * 3; // トークンの生存時間：3時間
 
-    if (AUTH.isSession) {
-      // ■■ セッションベース認証の処理 ■■
-      await createSession(user.id, tokenMaxAgeSeconds);
-      const res: ApiResponse<UserProfile> = {
-        success: true,
-        payload: userProfileSchema.parse(user), // 余分なプロパティを削除
-        message: "",
-      };
-      return NextResponse.json(res);
-    } else {
       // ■■ トークンベース認証の処理 ■■
       const jwt = await createJwt(user, tokenMaxAgeSeconds);
       const res: ApiResponse<string> = {
@@ -76,7 +60,7 @@ export const POST = async (req: NextRequest) => {
         message: "",
       };
       return NextResponse.json(res);
-    }
+    
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : "Internal Server Error";
     console.error(errorMsg);

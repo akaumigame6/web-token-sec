@@ -10,6 +10,8 @@ import { signupRequestSchema, SignupRequest } from "@/app/_types/SignupRequest";
 import { TextInputField } from "@/app/_components/TextInputField";
 import { ErrorMsgField } from "@/app/_components/ErrorMsgField";
 import { Button } from "@/app/_components/Button";
+import { SecretQuestion } from "@/app/_types/SecretQuestion";
+import type { ApiResponse } from "@/app/_types/ApiResponse";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { faSpinner, faPenNib } from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +26,8 @@ const Page: React.FC = () => {
   const c_Email = "email";
   const c_Password = "password";
   const c_ConfirmPassword = "confirmPassword";
+  const c_SecretQuestionId = "secretQuestionId";
+  const c_SecretAnswer = "secretAnswer";
 
   const router = useRouter();
 
@@ -32,7 +36,8 @@ const Page: React.FC = () => {
 
   // パスワードの強度の状態
   const [passwordStrength, setPasswordStrength] = useState<string | null>(null);
-  
+  const [questions, setQuestions] = useState<SecretQuestion[] | null >(null);
+
 
   // フォーム処理関連の準備と設定
   const formMethods = useForm<SignupRequest>({
@@ -40,6 +45,22 @@ const Page: React.FC = () => {
     resolver: zodResolver(signupRequestSchema),
   });
   const fieldErrors = formMethods.formState.errors;
+
+  useEffect(() => {
+    // APIから質問リストを取得
+    fetch("/api/secret-questions")
+      .then((res) => res.json())
+      .then((data: ApiResponse<SecretQuestion[]>) => {
+        if (data.success) {
+          setQuestions(data.payload);
+        } else {
+          console.error("秘密の質問の取得に失敗しました:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("秘密の質問の取得でエラーが発生しました:", error);
+      });
+  }, []);
 
   // ルートエラー（サーバサイドで発生した認証エラー）の表示設定の関数
   const setRootError = (errorMsg: string) => {
@@ -159,19 +180,19 @@ const Page: React.FC = () => {
           <ErrorMsgField msg={fieldErrors.password?.message} />
           <ErrorMsgField msg={fieldErrors.root?.message} />
           {/* パスワード強度の表示（色付きでレベル表示） */}
-{passwordStrength && (
-  <p
-    className={`mt-1 text-sm ${
-      passwordStrength.includes("とても強い") || passwordStrength.includes("強い")
-        ? "text-green-600"
-        : passwordStrength.includes("普通")
-        ? "text-yellow-600"
-        : "text-red-600"
-    }`}
-  >
-    パスワード強度: {passwordStrength}
-  </p>
-)}
+          {passwordStrength && (
+            <p
+              className={`mt-1 text-sm ${
+                passwordStrength.includes("とても強い") || passwordStrength.includes("強い")
+                  ? "text-green-600"
+                  : passwordStrength.includes("普通")
+                  ? "text-yellow-600"
+                  : "text-red-600"
+              }`}
+            >
+              パスワード強度: {passwordStrength}
+            </p>
+          )}
         </div>
 
         <div>
@@ -188,6 +209,44 @@ const Page: React.FC = () => {
           autoComplete="off"
         />
         <ErrorMsgField msg={fieldErrors.confirmPassword?.message} />
+      </div>
+
+      {/* 秘密の質問選択欄 */}
+      <div>
+        <label htmlFor={c_SecretQuestionId} className="mb-2 block font-bold">
+          秘密の質問
+        </label>
+        <select
+          {...formMethods.register(c_SecretQuestionId, { valueAsNumber: true })}
+          id={c_SecretQuestionId}
+          className="w-full rounded border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          disabled={isPending || isSignUpCompleted || !questions}
+        >
+          <option value="">質問を選択してください</option>
+          {questions?.map((q) => (
+            <option key={q.id} value={q.id}>
+              {q.question}
+            </option>
+          ))}
+        </select>
+        <ErrorMsgField msg={fieldErrors.secretQuestionId?.message} />
+      </div>
+
+      {/* 答えの入力欄 */}
+      <div>
+        <label htmlFor={c_SecretAnswer} className="mb-2 block font-bold">
+          質問の答え
+        </label>
+        <TextInputField
+          {...formMethods.register(c_SecretAnswer)}
+          id={c_SecretAnswer}
+          placeholder="質問の答えを入力してください"
+          type="text"
+          disabled={isPending || isSignUpCompleted}
+          error={!!fieldErrors.secretAnswer}
+          autoComplete="off"
+        />
+        <ErrorMsgField msg={fieldErrors.secretAnswer?.message} />
       </div>
 
         <Button

@@ -5,8 +5,6 @@ import type { UserProfile } from "@/app/_types/UserProfile";
 import useSWR, { mutate } from "swr";
 import type { ApiResponse } from "../_types/ApiResponse";
 import { jwtFetcher } from "./jwtFetcher";
-import { sessionFetcher } from "./sessionFetcher";
-import { AUTH } from "@/config/auth";
 
 interface AuthContextProps {
   userProfile: UserProfile | null;
@@ -25,7 +23,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { data: session } = useSWR<ApiResponse<UserProfile | null>>(
     "/api/auth",
-    AUTH.isSession ? sessionFetcher : jwtFetcher,
+    jwtFetcher,
   );
 
   useEffect(() => {
@@ -37,21 +35,26 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }, [session]);
 
   const logout = async () => {
-    if (AUTH.isSession) {
-      // ■■ セッションベース認証 ■■
-      // → バックエンドにログアウトリクエストを送信してセッションを破棄
-      await fetch("/api/logout", {
-        method: "DELETE",
-        credentials: "same-origin",
-      });
-    } else {
+    try {
       // ■■ トークンベース認証 ■■
-      // ローカルストレージから jwt を削除
+      // サーバーサイドでのトークン無効化処理（必要に応じて）
+      await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+        },
+      });
+    } catch (error) {
+      console.warn("Logout API call failed:", error);
+      // ネットワークエラーでもローカルの処理は続行
+    } finally {
+      // ローカルストレージから JWT を削除
       localStorage.removeItem("jwt");
+      // SWR キャッシュを無効化
+      mutate(() => true, undefined, { revalidate: false });
+      setUserProfile(null);
     }
-    // SWR キャッシュを無効化
-    mutate(() => true, undefined, { revalidate: false });
-    setUserProfile(null);
     return true;
   };
 

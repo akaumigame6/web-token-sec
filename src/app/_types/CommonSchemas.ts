@@ -3,9 +3,12 @@ import { Role } from "./Role";
 
 // 文字列のすべてが ASCII 範囲内（英数字・記号・半角スペースなど）で構成されているか
 const asciiOnly = /^[\x00-\x7F]*$/;
-export const passwordSchema = z.string().min(5).regex(asciiOnly);
-export const emailSchema = z.string().email();
-export const userNameSchema = z.string().min(1);
+export const passwordSchema = z
+  .string()
+  .min(8, "パスワードは8文字以上で入力してください")
+  .regex(asciiOnly, "パスワードは半角文字のみ使用できます");
+export const emailSchema = z.string().email("有効なメールアドレスを入力してください");
+export const userNameSchema = z.string().min(1, "名前を入力してください");
 export const roleSchema = z.nativeEnum(Role);
 
 // prettier-ignore

@@ -17,12 +17,16 @@ async function main() {
       password: "password1111",
       email: "admin01@example.com",
       role: Role.ADMIN,
+      secretQuestionId: 1, // 最初に飼ったペットの名前は？
+      secretAnswer: "ポチ",
     },
     {
       name: "不具合 直志",
       password: "password2222",
       email: "admin02@example.com",
       role: Role.ADMIN,
+      secretQuestionId: 2, // 小学校の名前は？
+      secretAnswer: "〇▼小学校",
     },
     {
       name: "構文 誤次郎",
@@ -31,6 +35,8 @@ async function main() {
       role: Role.USER,
       aboutSlug: "gojiro",
       aboutContent: "構文誤次郎です。<br>よろしくお願いします。",
+      secretQuestionId: 3, // 子どもの頃のあだ名は？
+      secretAnswer: "あやじろー",
     },
     {
       name: "仕様 曖昧子",
@@ -39,6 +45,8 @@ async function main() {
       role: Role.USER,
       aboutSlug: "aimaiko",
       aboutContent: "仕様曖昧子と申します。仲良くしてください。",
+      secretQuestionId: 4, // 好きな色は？
+      secretAnswer: "青みがかったブルー",
     },
   ];
 
@@ -64,7 +72,7 @@ async function main() {
 
   // 各テーブルの全レコードを削除
   await prisma.user.deleteMany();
-  await prisma.session.deleteMany();
+  await prisma.secretQuestion.deleteMany();
 
   // ユーザ（user）テーブルにテストデータを挿入
   await prisma.user.createMany({
@@ -76,7 +84,23 @@ async function main() {
       email: userSeed.email,
       aboutSlug: userSeed.aboutSlug || null,
       aboutContent: userSeed.aboutContent || "",
+      secretQuestionId: userSeed.secretQuestionId,
+      secretAnswer: bcrypt.hashSync(userSeed.secretAnswer, 10),
     })),
+  });
+
+  // シークレット質問（secretquestion）テーブルにデータを挿入
+  const secretQuestions = [
+    { question: "最初に飼ったペットの名前は？" },
+    { question: "小学校の名前は？" },
+    { question: "子どもの頃のあだ名は？" },
+    { question: "好きな色は？" },
+    { question: "好きな食べ物は？" },
+    { question: "好きな映画は？" },
+    { question: "初めて行った海外の国は？" },
+  ];
+  await prisma.secretQuestion.createMany({
+    data: secretQuestions,
   });
 
   console.log("Seeding completed successfully.");

@@ -27,12 +27,14 @@ export const signupServerAction = async (
       return {
         success: false,
         payload: null,
-        message: "このメールアドレスは既に使用されています。",
+        message: "",
       };
     }
 
     // パスワードのハッシュ化
     const hashedPassword = await bcrypt.hash(payload.password, 10);
+    // 秘密の質問のIDと回答を保存
+    const hashedSecretAnswer = await bcrypt.hash(payload.secretAnswer, 10);
 
     // ユーザの作成
     const user = await prisma.user.create({
@@ -40,6 +42,8 @@ export const signupServerAction = async (
         email: payload.email,
         password: hashedPassword,
         name: payload.name,
+        secretQuestionId: payload.secretQuestionId,
+        secretAnswer: hashedSecretAnswer,
       },
     });
 

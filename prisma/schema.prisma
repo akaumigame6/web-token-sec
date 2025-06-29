@@ -32,8 +32,11 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   lastLoginAt  DateTime? @map("last_login_at")
-
   sessions     Session[]
+
+  secretQuestionId    Int
+  secretAnswer        String
+  secretQuestion      SecretQuestion @relation(fields: [secretQuestionId], references: [id])
 
   @@map("users")
 }
@@ -47,3 +50,10 @@ model Session {
 
   @@map("sessions")
 }
+
+model SecretQuestion {
+  id Int @id @default(autoincrement())
+  question String @unique
+  users User[]
+}
+

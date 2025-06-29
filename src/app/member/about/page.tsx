@@ -8,6 +8,7 @@ import { faIdCard, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { TextInputField } from "@/app/_components/TextInputField";
 import { ErrorMsgField } from "@/app/_components/ErrorMsgField";
 import { Button } from "@/app/_components/Button";
+import NextLink from "next/link";
 import type { ApiResponse } from "@/app/_types/ApiResponse";
 import type { About } from "@/app/_types/About";
 import { aboutSchema } from "@/app/_types/About";
@@ -128,6 +129,25 @@ const Page: React.FC = () => {
       <div className="text-2xl font-bold">
         <FontAwesomeIcon icon={faIdCard} className="mr-1.5" />
         About（編集）
+      </div>
+
+      {/* ナビゲーションメニュー */}
+      <div className="mt-4 mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <h3 className="font-bold text-gray-700 mb-3">アカウント設定</h3>
+        <div className="flex flex-wrap gap-2">
+          <NextLink
+            href="/secretQuestion"
+            className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+          >
+            パスワード変更
+          </NextLink>
+          <NextLink
+            href="/member/update-secret-question"
+            className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+          >
+            秘密の質問変更
+          </NextLink>
+        </div>
       </div>
 
       <form

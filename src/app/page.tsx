@@ -6,7 +6,7 @@ const links = [
   {
     href: "/login",
     label: "ログイン",
-    info: "セッションベース認証入門/トークンベース認証入門",
+    info: "トークンベース認証入門",
   },
   {
     href: "/signup",
@@ -17,6 +17,16 @@ const links = [
     href: "/member/about",
     label: "公開プロフィールの確認・編集",
     info: "ログインが必要なコンテンツ",
+  },
+  {
+    href: "/member/update-secret-question",
+    label: "秘密の質問の更新",
+    info: "ログイン必須・セキュアなアカウント設定",
+  },
+  {
+    href: "/password-reset",
+    label: "パスワードリセット",
+    info: "メールアドレス+秘密の質問による本人確認",
   },
 ];
 
